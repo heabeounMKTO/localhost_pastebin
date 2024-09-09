@@ -56,7 +56,7 @@ env_logger::init();
     };
     let port = match &args.port {
         Some(ref _u32) => args.port,
-        None => Some(9990),
+        None => Some(9995),
     };
 
     let app_state = web::Data::new(AppState {
