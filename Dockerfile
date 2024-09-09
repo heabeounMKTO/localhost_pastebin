@@ -1,15 +1,14 @@
 FROM rust:alpine3.20 as BUILDER
 WORKDIR /home
-COPY ./src .
-COPY ./Cargo.toml ./Cargo.toml
+RUN apk add --no-cache musl-dev build-base
+COPY . .
 RUN cargo build --release
-
-
 
 
 FROM alpine:latest as RUNTIME
 WORKDIR /home
 RUN apk add --no-cache libgcc libstdc++
-COPY --from=builder /home/target/localhost_pastebin ./ 
+COPY --from=builder /home/target/release/localhost_pastebin /home/localhost_pastebin 
 COPY ./index.html ./index.html
-CMD ["target/localhost_pastebin"]
+EXPOSE 9900
+CMD ["/home/localhost_pastebin"]

@@ -1,14 +1,14 @@
-<!-- generated with chatgpt -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> we got local pastebin before gta 6</title>
+    <title>we got local pastebin before gta 6</title>
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet"
-          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script> <!-- YAML support -->
 
     <style>
         #beautifiedText {
@@ -30,17 +30,58 @@
     </style>
 </head>
 <body>
-    <h1> we got local pastebin before gta 6</h1>
+    <h1>we got local pastebin before gta 6</h1>
 
     <!-- Section to display the beautified and highlighted version of the text -->
     <pre id="beautifiedText"><code class="language-auto"></code></pre>
 
     <!-- Textbox for editing the text -->
+    <h2> update text here! </h2>
     <textarea id="textbox" rows="10" cols="50"></textarea><br>
-    <button id="submitBtn">Submit</button>
+    <button id="submitBtn">update pastebin</button>
     <p id="status"></p>
 
     <script>
+        // Function to detect if the text is JSON
+        function isJsonString(str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        }
+
+        // Function to detect if the text is YAML
+        function isYamlString(str) {
+            try {
+                jsyaml.load(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        }
+
+        // Function to beautify JSON
+        function beautifyJson(text) {
+            try {
+                const obj = JSON.parse(text);
+                return JSON.stringify(obj, null, 2); // Indent with 2 spaces
+            } catch (e) {
+                return text;
+            }
+        }
+
+        // Function to beautify YAML
+        function beautifyYaml(text) {
+            try {
+                const obj = jsyaml.load(text);
+                return jsyaml.dump(obj, { indent: 2 }); // Indent with 2 spaces
+            } catch (e) {
+                return text;
+            }
+        }
+
         // Function to load and beautify the text from the server
         function loadText() {
             $.get('/get_text', function(response) {
@@ -52,10 +93,19 @@
             });
         }
 
-        // Function to update the beautified text with syntax highlighting
+        // Function to update the beautified text with syntax highlighting and formatting
         function updateBeautifiedView(text) {
-            // Set the code content inside the <pre> and <code> block
-            $('#beautifiedText code').text(text);
+            let beautifiedText = text;
+            
+            // Check if the text is JSON or YAML and beautify it accordingly
+            if (isJsonString(text)) {
+                beautifiedText = beautifyJson(text);
+            } else if (isYamlString(text)) {
+                beautifiedText = beautifyYaml(text);
+            }
+
+            // Set the beautified content inside the <pre> and <code> block
+            $('#beautifiedText code').text(beautifiedText);
 
             // Automatically detect the language and apply syntax highlighting
             hljs.highlightElement(document.querySelector('#beautifiedText code'));
