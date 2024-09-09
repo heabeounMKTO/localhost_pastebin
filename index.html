@@ -1,0 +1,95 @@
+<!-- generated with chatgpt -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> we got local pastebin before gta 6</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+    <style>
+        #beautifiedText {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-family: "Courier New", Courier, monospace; /* Monospace font */
+            overflow: auto;
+        }
+
+        pre {
+            white-space: pre-wrap; /* Preserve whitespace */
+        }
+
+        code {
+            font-size: 14px; /* Optional: Adjust the font size */
+        }
+    </style>
+</head>
+<body>
+    <h1> we got local pastebin before gta 6</h1>
+
+    <!-- Section to display the beautified and highlighted version of the text -->
+    <pre id="beautifiedText"><code class="language-auto"></code></pre>
+
+    <!-- Textbox for editing the text -->
+    <textarea id="textbox" rows="10" cols="50"></textarea><br>
+    <button id="submitBtn">Submit</button>
+    <p id="status"></p>
+
+    <script>
+        // Function to load and beautify the text from the server
+        function loadText() {
+            $.get('/get_text', function(response) {
+                // Update the textarea
+                $('#textbox').val(response.text);
+                
+                // Update the beautified and highlighted view
+                updateBeautifiedView(response.text);
+            });
+        }
+
+        // Function to update the beautified text with syntax highlighting
+        function updateBeautifiedView(text) {
+            // Set the code content inside the <pre> and <code> block
+            $('#beautifiedText code').text(text);
+
+            // Automatically detect the language and apply syntax highlighting
+            hljs.highlightElement(document.querySelector('#beautifiedText code'));
+        }
+
+        $(document).ready(function(){
+            // Load the text when the page loads
+            loadText();
+
+            // Periodically check for updates (every 3 seconds)
+            setInterval(loadText, 3000);  // Long-polling interval (3 seconds)
+
+            // Handle the submission of new text
+            $('#submitBtn').click(function(){
+                let text = $('#textbox').val();
+
+                // Send text to server via AJAX
+                $.ajax({
+                    url: '/update_text',
+                    type: 'POST',
+                    data: { text: text },
+                    success: function(response){
+                        // Immediately update the textarea and beautified view
+                        $('#textbox').val(response.text);
+                        updateBeautifiedView(response.text); // Update beautified view with syntax highlighting
+                        $('#status').text('Text updated successfully!');
+                    },
+                    error: function(){
+                        $('#status').text('Error updating text.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
