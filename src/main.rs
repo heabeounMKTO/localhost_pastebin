@@ -5,6 +5,7 @@ use std::sync::{Arc, Mutex};
 use serde_json::json;
 use clap::Parser;
 use actix_web::middleware::Logger;
+use env_logger;
 
 #[derive(Parser)]
 struct CliArgs {
@@ -47,7 +48,8 @@ async fn get_text(state: web::Data<AppState>) -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let args = CliArgs::parse();
-
+    std::env::set_var("RUST_LOG", "actix_web=debug");
+env_logger::init();
     let host = match &args.host {
         Some(ref _String) => args.host,
         None => Some(String::from("0.0.0.0")),
